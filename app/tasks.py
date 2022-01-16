@@ -1,12 +1,13 @@
 import json
-import requests
 
+import requests
+from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.conf import settings
+
+from .models import Repository, RepositoryViews
 
 logger = get_task_logger(__name__)
-
-from celery import shared_task
-from .models import RepositoryViews, Repository
 
 
 @shared_task()
@@ -22,7 +23,7 @@ def getGithubData():
         url = f'https://api.github.com/repos/{repo[0]}/{repo[1]}/traffic/clones'
 
         headers = {
-            'Authorization': 'Token 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'}
+            'Authorization': f'Token ${settings.GITHUB_API_KEY}'}
         r = requests.get(url=url, headers=headers)
         r_status = r.status_code
         logger.info("REQUEST")
