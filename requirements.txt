@@ -1,6 +1,10 @@
 Django==4.0.1
+django-celery-beat==2.2.1
 django-cors-headers==3.11.0
 django-environ==0.8.1
 django-filter==21.1
 djangorestframework==3.13.1
 psycopg2==2.8.6
+celery==5.2.3
+redis==4.1.0
+requests==2.27

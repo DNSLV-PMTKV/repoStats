@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
@@ -53,3 +54,33 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering = ['id']
         verbose_name_plural = 'Users'
         db_table = 'users'
+
+
+class Repository(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    url = models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.url}'
+
+    class Meta:
+        ordering = ['id']
+        verbose_name_plural = 'Repositories'
+        db_table = 'repositories'
+
+
+class RepositoryViews(models.Model):
+    repo = models.ForeignKey(Repository, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    count = models.BigIntegerField()
+    unique = models.BigIntegerField()
+
+    def __str__(self):
+        return f'{self.repo}'
+
+    class Meta:
+        ordering = ['timestamp']
+        verbose_name_plural = 'RepositoryViews'
+        db_table = 'repositoriy_views'

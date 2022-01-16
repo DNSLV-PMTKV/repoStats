@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf.urls.static import static
 
 api_urls = [
-    path('users/', include('users.urls')),
+    path('', include('app.urls')),
 ]
 
 urlpatterns = [

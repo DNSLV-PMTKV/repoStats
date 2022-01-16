@@ -12,6 +12,7 @@
   - [Single user repository](#single-user-repository)
   - [All user repositories](#all-user-repositories)
   - [Filters](#filters)
+  - [How to start project](#how-to-start-project)
 
 ## What's expected from you?
 
@@ -222,3 +223,9 @@ Both of the views above should support the following GET parameters:
 1. You can pass only `start`, `end` or both `start` and `end`.
 1. The format is `YYYY-MM-DD`.
 1. If no filters are passed, show all the data for the given repository.
+
+
+### How to start project
+1. celery -A repoStats beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+2. celery -A repoStats worker -l info
+3. python manage.py runserver
