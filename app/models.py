@@ -78,7 +78,7 @@ class RepositoryViews(models.Model):
     unique = models.BigIntegerField()
 
     def __str__(self):
-        return f'{self.repo}'
+        return f'VIEWS {self.repo}'
 
     class Meta:
         ordering = ['timestamp']

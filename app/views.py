@@ -2,16 +2,21 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.utils.http import urlsafe_base64_encode
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 
-from app.models import RepositoryViews, User, Repository
-from app.serializers import CreateUserSerializer, CreateRepositorySerializer, ListRepositorySerializer, DetailRepositorySerializer
+from app.models import Repository, User
 from app.permissions import IsOwn
+from app.serializers import (CreateRepositorySerializer, CreateUserSerializer,
+                             DetailRepositorySerializer,
+                             ListRepositorySerializer,
+                             UserRepositorySerializer)
 
 EMAIL_RE = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,5}$'
 
@@ -95,3 +100,51 @@ class DeleteRepositoryView(DestroyAPIView):
     http_method_names = ['delete']
     permission_classes = [IsAuthenticated, IsOwn]
     queryset = Repository.objects.all()
+
+
+class SingleUserRepositoryView(RetrieveAPIView):
+    lookup_field = 'id'
+    http_method_names = ['get']
+    serializer_class = UserRepositorySerializer
+
+    def get_queryset(self):
+        user_token = self.kwargs.get('user_token', None)
+        repository_id = self.kwargs.get('id', None)
+
+        if not user_token:
+            raise ValidationError({'error': 'No token provided'})
+
+        user = None
+
+        try:
+            user = get_user_model().objects.get(token=user_token)
+        except get_user_model().DoesNotExist:
+            raise ValidationError(detail={'error': 'Invalid token.'})
+
+        repo = Repository.objects.filter(user=user, id=repository_id)
+
+        if not repo:
+            raise ValidationError(
+                {'error': 'This repository doesn\'t exist or is not corresponding to the token.'})
+
+        return repo
+
+
+class UserReposView(ListAPIView):
+    http_method_names = ['get']
+    serializer_class = UserRepositorySerializer
+
+    def get_queryset(self):
+        user_token = self.kwargs.get('user_token', None)
+
+        if not user_token:
+            raise ValidationError({'error': 'No token provided'})
+
+        user = None
+
+        try:
+            user = get_user_model().objects.get(token=user_token)
+        except get_user_model().DoesNotExist:
+            raise ValidationError(detail={'error': 'Invalid token.'})
+
+        return Repository.objects.filter(user=user)

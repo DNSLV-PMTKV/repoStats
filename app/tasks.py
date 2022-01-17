@@ -20,25 +20,17 @@ def getGithubData():
         repo_list.append((splitted[-2], splitted[-1], repo))
 
     for repo in repo_list:
-        url = f'https://api.github.com/repos/{repo[0]}/{repo[1]}/traffic/clones'
-
+        url = f'https://api.github.com/repos/{repo[0]}/{repo[1]}/traffic/views'
         headers = {
-            'Authorization': f'Token ${settings.GITHUB_API_KEY}'}
+            'Authorization': f'Token {settings.GITHUB_API_KEY}'}
         r = requests.get(url=url, headers=headers)
         r_status = r.status_code
-        logger.info("REQUEST")
-        logger.info(r.json())
+        logger.info("REQUEST", r.json())
         if r_status == 200:
-            binary = r.content
-            data = json.loads(binary)
-            for githubDataRecord in data['clones']:
-                repoView = None
-                try:
-                    repoView = RepositoryViews.objects.get(
-                        timestamp=githubDataRecord['timestamp'], repo=repo[2])
-                except RepositoryViews.DoesNotExist:
-                    repoView = None
-
+            data = json.loads(r.content)
+            for githubDataRecord in data['views']:
+                repoView = RepositoryViews.objects.filter(
+                    timestamp=githubDataRecord['timestamp'], repo=repo[2])
                 if not repoView:
                     logger.info("ADDING")
                     repoView = RepositoryViews(

@@ -1,5 +1,8 @@
+from sqlite3 import Timestamp
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from datetime import timedelta
+from django.utils import timezone
 
 from app.models import Repository, RepositoryViews
 
@@ -39,5 +42,28 @@ class DetailRepositorySerializer(serializers.ModelSerializer):
         fields = ['id', 'url', 'created_at', 'views']
 
     def get_views(self, obj):
-        followers_queryset = RepositoryViews.objects.filter(repo=obj)
+        time_threshold = timezone.now() - timedelta(days=14)
+        followers_queryset = RepositoryViews.objects.filter(
+            repo=obj, timestamp__gt=time_threshold)
         return RepositoryViewSerializer(followers_queryset, many=True).data
+
+
+class UserRepositorySerializer(serializers.ModelSerializer):
+    views = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Repository
+        fields = ['id', 'url', 'created_at', 'views']
+
+    def get_views(self, obj):
+        query_params = self.context['request'].query_params
+        start = query_params.get('start', None)
+        end = query_params.get('end', None)
+
+        views = RepositoryViews.objects.filter(repo=obj)
+        if start:
+            views = views.filter(timestamp__gte=start)
+        if end:
+            views = views.filter(timestamp__lte=end)
+
+        return RepositoryViewSerializer(views, many=True).data
