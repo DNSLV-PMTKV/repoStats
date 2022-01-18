@@ -16,7 +16,7 @@ from app.permissions import IsOwn
 from app.serializers import (CreateRepositorySerializer, CreateUserSerializer,
                              DetailRepositorySerializer,
                              ListRepositorySerializer,
-                             UserRepositorySerializer)
+                             UserRepositorySerializer, UserTokenValidationSerializer)
 
 EMAIL_RE = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,5}$'
 
@@ -84,7 +84,9 @@ class ListRepositoryView(ListAPIView):
     http_method_names = ['get']
     permission_classes = [IsAuthenticated, IsOwn]
     serializer_class = ListRepositorySerializer
-    queryset = Repository.objects.all()
+
+    def get_queryset(self):
+        return Repository.objects.filter(user=self.request.user)
 
 
 class DetailRepositoryView(RetrieveAPIView):
@@ -92,7 +94,9 @@ class DetailRepositoryView(RetrieveAPIView):
     http_method_names = ['get']
     permission_classes = [IsAuthenticated, IsOwn]
     serializer_class = DetailRepositorySerializer
-    queryset = Repository.objects.all()
+
+    def get_queryset(self):
+        return Repository.objects.filter(user=self.request.user)
 
 
 class DeleteRepositoryView(DestroyAPIView):
@@ -148,3 +152,25 @@ class UserReposView(ListAPIView):
             raise ValidationError(detail={'error': 'Invalid token.'})
 
         return Repository.objects.filter(user=user)
+
+
+class UserTokenValidationView(CreateAPIView):
+
+    http_method_names = ['post']
+    serializer_class = UserTokenValidationSerializer
+    queryset = get_user_model().objects.all()
+
+    def create(self, request: Request, *args, **kwargs):
+
+        serializer = self.serializer_class(
+            data=request.data, context={'request': request})
+        serializer.is_valid()
+
+        token = serializer.data['token']
+
+        user_exists = get_user_model().objects.filter(token=token).exists()
+
+        if not user_exists:
+            raise ValidationError({'error': 'Wrong token'})
+
+        return Response({}, status=status.HTTP_200_OK)

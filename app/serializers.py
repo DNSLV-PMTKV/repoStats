@@ -67,3 +67,7 @@ class UserRepositorySerializer(serializers.ModelSerializer):
             views = views.filter(timestamp__lte=end)
 
         return RepositoryViewSerializer(views, many=True).data
+
+
+class UserTokenValidationSerializer(serializers.Serializer):
+    token = serializers.CharField()

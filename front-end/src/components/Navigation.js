@@ -35,15 +35,33 @@ const NavList = styled.ul`
 	}
 `;
 const Navigation = () => {
+	const authenticated = localStorage.getItem('token');
+
 	return (
 		<Nav>
 			<NavList>
-				<li>
-					<Link to='/'>Home</Link>
-				</li>
-				<li>
-					<Link to='/charts'>Charts</Link>
-				</li>
+				{authenticated ? (
+					<>
+						<li>
+							<Link to='/repos'>My Repos</Link>
+						</li>
+						<li>
+							<Link to='/add-repo'>Add Repo</Link>
+						</li>
+					</>
+				) : (
+					<>
+						<li>
+							<Link to='/'>Create Account</Link>
+						</li>
+						<li>
+							<Link to='/login'>Login</Link>
+						</li>
+						<li>
+							<Link to='/single-repo'>Single user repository</Link>
+						</li>
+					</>
+				)}
 			</NavList>
 		</Nav>
 	);

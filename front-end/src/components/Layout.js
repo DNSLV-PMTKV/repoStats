@@ -26,6 +26,11 @@ const Main = styled.main`
 		height: calc(100% - 64px);
 		width: calc(100% - 260px - 4em);
 	}
+
+	@media (max-width: 700px) {
+		width: 100%;
+		padding: 0;
+	}
 `;
 
 const Layout = ({ children }) => {

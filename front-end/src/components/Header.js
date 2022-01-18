@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const HeaderBar = styled.header`
@@ -18,10 +19,29 @@ const Heading = styled.h1`
 	letter-spacing: 2px;
 `;
 
+const Logout = styled.h2`
+	text-transform: uppercase;
+	margin-left: auto;
+	cursor: pointer;
+	margin-right: 1.5em;
+`;
+
 const Header = () => {
+	const navigation = useNavigate();
 	return (
 		<HeaderBar>
 			<Heading>Repo Stats</Heading>
+			{localStorage.getItem('token') ? (
+				<Logout
+					onClick={() => {
+						localStorage.removeItem('token');
+						navigation('/');
+						window.location.reload(false);
+					}}
+				>
+					Logout
+				</Logout>
+			) : null}
 		</HeaderBar>
 	);
 };
