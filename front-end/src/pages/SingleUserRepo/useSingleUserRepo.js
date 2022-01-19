@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { useState } from 'react';
 import { fetchSingleUserRepo } from '../../requests/requests';
 
@@ -8,6 +9,9 @@ const useSingleUserRepo = () => {
 	const [chartData, setChartData] = useState(null);
 	const [repoName, setRepoName] = useState(null);
 	const [error, setError] = useState(null);
+
+	const [start, setStart] = useState(null);
+	const [end, setEnd] = useState(null);
 
 	const convertData = (responseData) => {
 		const countData = [];
@@ -22,7 +26,10 @@ const useSingleUserRepo = () => {
 	};
 
 	const submitData = () => {
-		fetchSingleUserRepo(token, repoId)
+		const s = start ? moment(start).format('YYYY-MM-DD') : null;
+		const e = end ? moment(end).format('YYYY-MM-DD') : null;
+
+		fetchSingleUserRepo(token, repoId, s, e)
 			.then((response) => {
 				setRenderTable(true);
 				setChartData(convertData(response.data));
@@ -48,7 +55,11 @@ const useSingleUserRepo = () => {
 		chartData,
 		repoName,
 		backButton,
-		error
+		error,
+		start,
+		setStart,
+		end,
+		setEnd
 	};
 };
 

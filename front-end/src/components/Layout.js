@@ -16,14 +16,14 @@ const Wrapper = styled.div`
 `;
 const Main = styled.main`
 	position: fixed;
-	height: calc(100% - 185px);
+	height: 100%;
 	width: calc(100% - 220px);
 	padding: 2em;
-	overflow-y: hidden;
+	overflow-y: auto;
 	@media (min-width: 700px) {
 		flex: 1;
 		margin-left: 260px;
-		height: calc(100% - 64px);
+		height: calc(100% - 130px);
 		width: calc(100% - 260px - 4em);
 	}
 

@@ -60,6 +60,9 @@ const Navigation = () => {
 						<li>
 							<Link to='/single-repo'>Single user repository</Link>
 						</li>
+						<li>
+							<Link to='/all-repos'>All user repositories</Link>
+						</li>
 					</>
 				)}
 			</NavList>

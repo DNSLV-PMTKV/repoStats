@@ -5,6 +5,10 @@ import styled from 'styled-components';
 import Chart from '../../components/Chart';
 import useSingleUserRepo from './useSingleUserRepo';
 
+import DatePicker from '@mui/lab/DatePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DateAdapter from '@mui/lab/AdapterMoment';
+
 const SBox = styled.div`
 	height: inherit;
 	margin: auto;
@@ -17,9 +21,27 @@ const BBox = styled.div`
 	margin-top: 100px;
 `;
 
+const Spacer = styled.div`
+	margin-top: ${(props) => (props.space ? props.space : '100px')};
+`;
+
 const SingleUserRepo = () => {
-	const { token, repoId, setToken, setRepoId, submitData, renderTable, chartData, repoName, backButton, error } =
-		useSingleUserRepo();
+	const {
+		token,
+		repoId,
+		setToken,
+		setRepoId,
+		submitData,
+		renderTable,
+		chartData,
+		repoName,
+		backButton,
+		error,
+		start,
+		end,
+		setStart,
+		setEnd
+	} = useSingleUserRepo();
 
 	const searchBox = (
 		<BBox>
@@ -45,6 +67,26 @@ const SingleUserRepo = () => {
 						value={repoId}
 						onChange={(e) => setRepoId(e.target.value)}
 					/>
+					<LocalizationProvider dateAdapter={DateAdapter}>
+						<DatePicker
+							label='start'
+							value={start}
+							onChange={(newValue) => {
+								setStart(newValue);
+							}}
+							renderInput={(params) => <TextField sx={{ width: '100%' }} {...params} />}
+						/>
+						<Spacer space='1em' />
+						<DatePicker
+							label='end'
+							value={end}
+							onChange={(newValue) => {
+								setEnd(newValue);
+							}}
+							renderInput={(params) => <TextField sx={{ width: '100%' }} {...params} />}
+						/>
+						<Spacer space='1em' />
+					</LocalizationProvider>
 					{error ? (
 						<Box sx={{ marginBottom: '1em' }}>
 							<Typography color='red' variant='body'>

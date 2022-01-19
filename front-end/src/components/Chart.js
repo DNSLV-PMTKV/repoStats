@@ -9,17 +9,18 @@ const Chart = (props) => {
 				height={400}
 				data={props.data}
 				margin={{
-					top: 50
+					bottom: 50
 				}}
 			>
+				<Legend layout='vetical' verticalAlign='middle' align='right' />
+
 				<Line type='monotone' dataKey='count' stroke='#8884d8' dot={{ r: 4 }} strokeWidth={2} />
 				<Line type='monotone' dataKey='unique' stroke='#82ca9d' />
 				<CartesianGrid stroke='#ccc' />
 				<XAxis dataKey='name'>
-					<Label value={props.repo} offset={250} position='top' />
+					<Label value={props.repo} offset={0} position='bottom' />
 				</XAxis>
 				<YAxis scale='linear' />
-				<Legend />
 				<Tooltip />
 				<CartesianGrid strokeDasharray='3 3' />
 			</LineChart>
